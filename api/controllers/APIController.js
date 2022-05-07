@@ -1,24 +1,12 @@
 'use strict';
-const Web3 = require('web3');
-const vaultabi = require('../contracts/vault.json');
-const flapabi=require('../contracts/vault.json');
 const FloopyDAO = require('../data/FloopybirdDAO');
-var web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545/');
-
+const SmartContractDAO = require('../data/SmartContractDAO');
+const matchCode = 5;
 
 async function getBalance(Address) {
-  try {
-    Address=Address.toLowerCase();
-    var contract = await new web3.eth.Contract(flapabi, token_address);
-    var bl = await contract.methods.balanceOf(Address).call();
-
-    var value = bl / 10 ** 18;
-    return value;
-  } catch (error) {
-    return null;
-  }
+    let dao = new SmartContractDAO();
+    return await dao.getBalance(Address);
 }
-
 async function getTicketBalance(address) {
   try {
     let dao = new FloopyDAO(':memory:');
@@ -30,11 +18,11 @@ async function getTicketBalance(address) {
   }
 }
 
-async function addTicketBalance(address, amount) {
+async function addTicketBalance(address, amount, transaction_id) {
   try {
     let dao = new FloopyDAO(':memory:');
-    //await dao.AddPlayerVault(address);
-    return await dao.AddPlayerBalance(address, amount);
+    await dao.AddPlayerVault(address);
+    return await dao.AddPlayerBalance(address, amount, transaction_id);
   } catch (error) {
     console.log(error);
     return null;
@@ -44,42 +32,46 @@ async function addTicketBalance(address, amount) {
 async function withdrawTicketBalance(address, amount) {
   try {
     let dao = new FloopyDAO(':memory:');
-    //await dao.AddPlayerVault(address);
-    //await dao.AddPlayerBalance(address, amount*2);
+    await dao.AddPlayerVault(address);
+    await dao.AddPlayerBalance(address, amount*2);
     let result =  await dao.WithdrawPlayerBalance(address, amount);
+
     return result;
+
   } catch (error) {
     console.log(error);
-    return null;
   }
+  return null;
 }
 
-async function startPlayerMatch(address, amount) {
+async function startPlayerMatch(address) {
   try {
     let dao = new FloopyDAO(':memory:');
     //await dao.AddPlayerVault(address);
     //await dao.AddPlayerBalance(address, amount*2);
-    let result =  await dao.WithdrawPlayerBalance(address, amount);
-    return result;
+    let code =  await dao.WithdrawPlayerBalance(address, matchCode);
+    if(code != null){
+      let result =  await dao.StartPlayerMatch(address);
+      return result;
+    }
   } catch (error) {
     console.log(error);
     return null;
   }
 }
 
-
-async function deposit(Address, ticket, transaction_id) {
+async function endPlayerMatch(address, id, point, matchData) {
   try {
-
+    let dao = new FloopyDAO(':memory:');
+    //await dao.AddPlayerVault(address);
+    //await dao.AddPlayerBalance(address, amount*2);
+    let updateId = await dao.EndPlayerMatch(addressid, id, point, matchData);
+    if(updateId != null){
+      let result =  await dao.AddPlayerBalance(address, point);
+      return result;
+    }
   } catch (error) {
-    return null;
-  }
-}
-
-async function withdraw(Address, ticket, transaction_id) {
-  try {
-
-  } catch (error) {
+    console.log(error);
     return null;
   }
 }
@@ -89,7 +81,7 @@ exports.getBalance = async function (req, res) {
     var bls = await getBalance(req.query.address);
     if (bls == null)
       return res.status(401).json(helper.APIReturn(101, "something wrongs"));
-    return res.status(200).json(helper.APIReturn(0, { "Balances": bls }, "Success"));
+    return res.status(200).json(helper.APIReturn(0, { "balances": bls }, "Success"));
 
   } catch (error) {
     return res.status(401).json(helper.APIReturn(101, "something wrongs"));
@@ -101,7 +93,7 @@ exports.getTitketBalance = async function (req, res) {
     var bls = await getTicketBalance(req.query.address);
     if (bls == null)
       return res.status(401).json(helper.APIReturn(101, "something wrongs"));
-    return res.status(200).json(helper.APIReturn(0, { "Balances": bls }, "Success"));
+    return res.status(200).json(helper.APIReturn(0, { "balances": bls }, "Success"));
 
   } catch (error) {
     console.log(error);
@@ -115,10 +107,15 @@ exports.withdraw = async function withdraw(req, res) {
     if(address ===undefined || amount === undefined || amount <= 0){
       return res.status(400).json(helper.APIReturn(101, "bad request"));
     }
+
     let result = await withdrawTicketBalance(address, amount);
     if(result == null){
       return res.status(400).json(helper.APIReturn(102, "bad request"));   
     }
+    console.log("call smart contract");
+    let dao = new SmartContractDAO.SmartContractDAO();
+    await dao.withdraw(address, result);
+
     return res.status(200).json(helper.APIReturn(0,{result}, "success"));   
   } catch (error) {
     console.log(error);
@@ -128,11 +125,11 @@ exports.withdraw = async function withdraw(req, res) {
 
 exports.deposit = async function deposit(req, res) {
   try {
-    let {address, amount} = req.body;
-    if(address ===undefined || amount === undefined || amount <= 0){
+    let {address, amount, transaction_id} = req.body;
+    if(address === undefined || amount === undefined || amount <= 0 || transaction_id === undefined){
       return res.status(400).json(helper.APIReturn(101, "bad request"));
     }
-    let result = await addTicketBalance(address, amount);
+    let result = await addTicketBalance(address, amount, transaction_id);
     if(result == null){
       return res.status(400).json(helper.APIReturn(102, "bad request"));   
     }
@@ -143,3 +140,28 @@ exports.deposit = async function deposit(req, res) {
   }
 }
 
+exports.startMatch = async function (req, res) {
+  try {
+    var bls = await startPlayerMatch(req.query.address);
+    if (bls == null)
+      return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+    return res.status(200).json(helper.APIReturn(0, { "Id": bls }, "Success"));
+
+  } catch (error) {
+    return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+  }
+}
+
+exports.endMatch = async function (req, res) {
+  try {
+    let {addrress, id, point, matchData} = req.body;
+
+    var bls = await endPlayerMatch(addrress, id, point, matchData);
+    if (bls == null)
+      return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+    return res.status(200).json(helper.APIReturn(0, { "result": bls }, "Success"));
+
+  } catch (error) {
+    return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+  }
+}

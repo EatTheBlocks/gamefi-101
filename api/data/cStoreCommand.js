@@ -22,7 +22,10 @@ class cStoreCommand{
         this.EndPlayerMatchCommand = 
         `UPDATE tbl_player_match 
         SET end_time =$end_time, play_data=$play_data, player_point=$player_point
-        WHERE wallet_id = $wallet_id AND id = $id`;
+        WHERE wallet_id = $wallet_id AND id = $id returning id`;
+        this.AddPlayerBalanceTransactionCommand = 
+        `INSERT INTO tbl_vault_transaction (wallet_id, transaction_type, amount, transaction_date,transaction_id)
+        VALUES($wallet_id, $transaction_type, $amount, $transaction_date,$transaction_id) returning id`;
     }
 }
 

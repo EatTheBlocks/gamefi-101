@@ -13,11 +13,13 @@ function DatabaseInit(db) {
     
         let tbl_vault_transaction =
         `CREATE TABLE IF NOT EXISTS tbl_vault_transaction (
-            wallet_id TEXT PRIMARY KEY,
-            transaction_type integer
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            wallet_id TEXT,
+            transaction_type integer,
             amount REAL DEFAULT 0,
             transaction_date INTEGER,
-            status INTEGER
+            status INTEGER,
+            transaction_id TEXT
         );`
     
         let tbl_player_match =

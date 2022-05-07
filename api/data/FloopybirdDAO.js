@@ -51,37 +51,62 @@ class FloopybirdDAO {
     return result[0].balance;
   }
 
-  async AddPlayerBalance(wallet_id, amount)
+  async AddPlayerBalanceTransaction(wallet_id, transaction_type, amount, transaction_date, transaction_id)
   {
+    let result = await this.RunCommand(cStoreCommand.AddPlayerBalanceTransactionCommand,{
+      $wallet_id: wallet_id, 
+      $transaction_type: transaction_type,
+       $amount: amount, 
+       $transaction_date: transaction_date,
+       $transaction_id: transaction_id
+    });
+    if(result == null || result.length == 0)
+      return null;
+    return result[0].id;
+  }
+
+  async AddPlayerBalance(wallet_id, amount, transaction_id = null)
+  {
+    let date = parseInt(new Date().getTime()/1000);
     let result = await this.RunCommand(cStoreCommand.AddPlayerBalanceCommand,{$wallet_id:wallet_id, $amount: amount});
     if(result == null || result.length == 0)
       return null;
+    await this.AddPlayerBalanceTransaction(wallet_id, 1, amount, date, transaction_id);
+
     return result[0].balance;
   }
 
   async WithdrawPlayerBalance(wallet_id, amount)
   {
+    let date = parseInt(new Date().getTime()/1000);
     let result = await this.RunCommand(cStoreCommand.WithdrawPlayerBalanceCommand,{$wallet_id:wallet_id, $amount: amount});
     if(result == null || result.length == 0)
       return null;
+    await this.AddPlayerBalanceTransaction(wallet_id, 1, amount, date, null);
+
     return amount;
   }
+
   async StartPlayerMatch(wallet_id)
   {
     let date = parseInt(new Date().getTime()/1000);
     let result = await this.RunCommand(cStoreCommand.StartPlayerMatchCommand,{$wallet_id:wallet_id, $start_time: date});
     return result[0].id;
   }
+
   async EndPlayerMatch(wallet_id, id, play_data,player_point)
   {
     let date = parseInt(new Date().getTime()/1000);
-    await this.RunCommand(cStoreCommand.EndPlayerMatchCommand,{
+    let result = await this.RunCommand(cStoreCommand.EndPlayerMatchCommand,{
         $wallet_id: wallet_id,
         $id: id,  
         $player_point: player_point,
         $play_data: play_data,
         $end_time: date
         });
+        if(result == null || result.length == 0)
+        return null;
+      return result[0].id;
   }
 }
 
