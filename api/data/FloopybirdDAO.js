@@ -51,6 +51,22 @@ class FloopybirdDAO {
     return result[0].balance;
   }
 
+  async GetTopPlayer(row_count = 10)
+  {
+    let result = await this.RunCommand(cStoreCommand.GetTopPlayerCommand,{$row_count:row_count});
+    
+    if(result == null)
+      return null;
+
+    let matchs = await result.map((e) => ({
+      wallet_id: e.wallet_id,
+      point: e.player_point,
+      start_time:e.start_time,
+      end_time:e.end_time
+    }));
+    return matchs;
+  }
+
   async AddPlayerBalanceTransaction(wallet_id, transaction_type, amount, transaction_date, transaction_id)
   {
     let result = await this.RunCommand(cStoreCommand.AddPlayerBalanceTransactionCommand,{
@@ -94,16 +110,19 @@ class FloopybirdDAO {
     return result[0].id;
   }
 
-  async EndPlayerMatch(wallet_id, id,player_point, play_data)
+  async EndPlayerMatch(wallet_id, id, player_point, play_data)
   {
     let date = parseInt(new Date().getTime()/1000);
-    let result = await this.RunCommand(cStoreCommand.EndPlayerMatchCommand,{
-        $wallet_id: wallet_id,
-        $id: id,  
-        $player_point: player_point,
-        $play_data: JSON.stringify( play_data),
-        $end_time: date
-        });
+    let data = {
+      $wallet_id: wallet_id,
+      $id: id,  
+      $player_point: player_point,
+      $play_data: JSON.stringify( play_data),
+      $end_time: date
+      };
+    console.log(data);
+    
+    let result = await this.RunCommand(cStoreCommand.EndPlayerMatchCommand, data);
         if(result == null || result.length == 0)
         return null;
       return result[0].id;

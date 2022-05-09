@@ -24,12 +24,20 @@ async function getTicketBalance(address) {
   try{
     await dao.AddPlayerVault(address);
   }
-  catch{
-  }
+  catch{}
   try {
-    
-    
     return await dao.GetPlayerBalance(address);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+async function getTopPlayer() {
+  let dao = new FloopyDAO(dbfilepath);
+  try {
+
+    return await dao.GetTopPlayer();
   } catch (error) {
     console.log(error);
     return null;
@@ -183,13 +191,25 @@ exports.startMatch = async function (req, res) {
 
 exports.endMatch = async function (req, res) {
   try {
-    let {addrress, id, point, matchData} = req.body;
+    let {address, id, point, matchData} = req.body;
 
-    var bls = await endPlayerMatch(addrress, id, point, matchData);
+    var bls = await endPlayerMatch(address, id, point, matchData);
     if (bls == null)
       return res.status(401).json(helper.APIReturn(101, "something wrongs"));
     return res.status(200).json(helper.APIReturn(0, { "result": bls }, "Success"));
 
+  } catch (error) {
+    return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+  }
+}
+
+exports.getTop = async function (req, res) {
+  try {
+    var bls = await getTopPlayer();
+    if (bls == null)
+      return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+
+    return res.status(200).json(helper.APIReturn(0, { "result": bls }, "Success"));
   } catch (error) {
     return res.status(401).json(helper.APIReturn(101, "something wrongs"));
   }
