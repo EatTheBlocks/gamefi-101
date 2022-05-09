@@ -94,14 +94,14 @@ class FloopybirdDAO {
     return result[0].id;
   }
 
-  async EndPlayerMatch(wallet_id, id, play_data,player_point)
+  async EndPlayerMatch(wallet_id, id,player_point, play_data)
   {
     let date = parseInt(new Date().getTime()/1000);
     let result = await this.RunCommand(cStoreCommand.EndPlayerMatchCommand,{
         $wallet_id: wallet_id,
         $id: id,  
         $player_point: player_point,
-        $play_data: play_data,
+        $play_data: JSON.stringify( play_data),
         $end_time: date
         });
         if(result == null || result.length == 0)

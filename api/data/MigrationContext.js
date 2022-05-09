@@ -28,7 +28,7 @@ function DatabaseInit(db) {
             wallet_id TEXT,
             start_time INTEGER,
             end_time INTEGER,
-            play_data BLOB,
+            play_data TEXT,
             player_point INTEGER DEFAULT 0,
             status INTEGER
         );`

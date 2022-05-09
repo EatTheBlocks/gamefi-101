@@ -2,14 +2,32 @@
 const FloopyDAO = require('../data/FloopybirdDAO');
 const SmartContractDAO = require('../data/SmartContractDAO');
 const matchCode = 5;
+const dbfilepath = "floppyBird.db";
 
 async function getBalance(Address) {
     let dao = new SmartContractDAO();
     return await dao.getBalance(Address);
 }
-async function getTicketBalance(address) {
+
+async function addPlayer(address){
   try {
-    let dao = new FloopyDAO(':memory:');
+    let dao = new FloopyDAO(dbfilepath);
+    return await dao.AddPlayerVault(address);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+async function getTicketBalance(address) {
+  let dao = new FloopyDAO(dbfilepath);
+  try{
+    await dao.AddPlayerVault(address);
+  }
+  catch{
+  }
+  try {
+    
     
     return await dao.GetPlayerBalance(address);
   } catch (error) {
@@ -20,8 +38,7 @@ async function getTicketBalance(address) {
 
 async function addTicketBalance(address, amount, transaction_id) {
   try {
-    let dao = new FloopyDAO(':memory:');
-    await dao.AddPlayerVault(address);
+    let dao = new FloopyDAO(dbfilepath);
     return await dao.AddPlayerBalance(address, amount, transaction_id);
   } catch (error) {
     console.log(error);
@@ -31,9 +48,9 @@ async function addTicketBalance(address, amount, transaction_id) {
 
 async function withdrawTicketBalance(address, amount) {
   try {
-    let dao = new FloopyDAO(':memory:');
-    await dao.AddPlayerVault(address);
-    await dao.AddPlayerBalance(address, amount*2);
+    let dao = new FloopyDAO(dbfilepath);
+    //await dao.AddPlayerVault(address);
+    //await dao.AddPlayerBalance(address, amount*2);
     let result =  await dao.WithdrawPlayerBalance(address, amount);
 
     return result;
@@ -46,7 +63,7 @@ async function withdrawTicketBalance(address, amount) {
 
 async function startPlayerMatch(address) {
   try {
-    let dao = new FloopyDAO(':memory:');
+    let dao = new FloopyDAO(dbfilepath);
     //await dao.AddPlayerVault(address);
     //await dao.AddPlayerBalance(address, amount*2);
     let code =  await dao.WithdrawPlayerBalance(address, matchCode);
@@ -62,17 +79,29 @@ async function startPlayerMatch(address) {
 
 async function endPlayerMatch(address, id, point, matchData) {
   try {
-    let dao = new FloopyDAO(':memory:');
+    let dao = new FloopyDAO(dbfilepath);
     //await dao.AddPlayerVault(address);
     //await dao.AddPlayerBalance(address, amount*2);
-    let updateId = await dao.EndPlayerMatch(addressid, id, point, matchData);
+    let updateId = await dao.EndPlayerMatch(address, id, point, matchData);
     if(updateId != null){
-      let result =  await dao.AddPlayerBalance(address, point);
+      let result =  await dao.AddPlayerBalance(address, point, null);
       return result;
     }
   } catch (error) {
     console.log(error);
     return null;
+  }
+}
+
+exports.addPlayer = async function (req, res) {
+  try {
+    var bls = await addPlayer(req.query.address);
+    if (bls == null)
+      return res.status(401).json(helper.APIReturn(101, "something wrongs"));
+    return res.status(200).json(helper.APIReturn(0, { "balances": bls }, "Success"));
+
+  } catch (error) {
+    return res.status(401).json(helper.APIReturn(101, "something wrongs"));
   }
 }
 
