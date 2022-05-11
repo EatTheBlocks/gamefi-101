@@ -1,8 +1,8 @@
 class cStoreCommand{
     constructor(){
         this.AddPlayerVaultCommand = 
-        `INSERT INTO tbl_player_vault(wallet_id, created_date)
-        VALUES(lower($wallet_id), $created_date) RETURNING *`;
+        `INSERT INTO tbl_player_vault(wallet_id, created_date, balance)
+        VALUES(lower($wallet_id), $created_date, 10) RETURNING *`;
     
         this.GetPlayerBalanceCommand = `SELECT * FROM tbl_player_vault WHERE wallet_id = lower($wallet_id) AND STATUS = 1`;
 
@@ -14,7 +14,7 @@ class cStoreCommand{
     
         this.AddPlayerBalanceCommand = 
         `UPDATE tbl_player_vault SET balance = balance + $amount
-        WHERE wallet_id = lower($wallet_id) AND $amount > 0 RETURNING balance`;
+        WHERE wallet_id = lower($wallet_id) AND $amount >= 0 RETURNING balance`;
     
         this.WithdrawPlayerBalanceCommand =
         `UPDATE tbl_player_vault SET balance = balance - $amount
