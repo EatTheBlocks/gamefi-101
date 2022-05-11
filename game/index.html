@@ -31,11 +31,16 @@
       </div>
       <div class="wallet-information">
          <div id="wallet-info"></div>
-         <div id='disconnect-wallet'>
-            <span>Disconnect</span>
+         <div class="btn-wrapper" style="display: flex; flex-direction: row">
+            <div id='disconnect-wallet' class="disconnect-wallet">
+               <span>Disconnect</span>
+            </div>
+            <div id='convert-container' class="disconnect-wallet">
+               <span>Convert</span>
+            </div>
          </div>
       </div>
-      
+
       <div id="gamescreen">
 
          <div id="sky" class="animated">
@@ -62,6 +67,25 @@
             <div id="debug"></div>
          </div>
       </div>
+
+      <div id="deposit-withdraw">
+         <span class="convert-title">Convert Ticket</span>
+         <div class="row">
+            <span id="label-from">Ticket</span>
+            <input value="0" type="number" id="from-ticket" />
+         </div>
+         <div style="display: flex; justify-content: center;">
+            <img src="./assets/arrow.png" style="width: 25px; cursor: pointer;" id="img-convert" />
+         </div>
+         <div class="row">
+            <span id="label-to">FBird</span>
+            <input value="0" id="to-ticket" type="number" readonly />
+         </div>
+         <div class="row">
+            <span id="processing">please wait...</span>
+            <button id="btn-convert">Convert</button>
+         </div>
+      </div>
    </div>
    <div id="footer">
       <a href="https://www.dotgears.com/">original game/concept/art by dong nguyen</a>
@@ -71,14 +95,18 @@
    <div class="boundingbox" id="playerbox"></div>
    <div class="boundingbox" id="pipebox"></div>
 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
    <script src="js/jquery.min.js"></script>
    <script src="js/jquery.transit.min.js"></script>
    <script src="js/buzz.min.js"></script>
-   <script src="js/main.js"></script>
    <script type="text/javascript" src="js/web3/web3.min.js"></script>
    <script type="text/javascript" src="js/web3/web3.modal.index.js"></script>
    <script type="text/javascript" src="js/web3/web3-provider.min.js"></script>
+
+
+   <script src="js/web3/api.js"></script>
    <script src="js/web3/web3Modal.js"></script>
+   <script src="js/main.js"></script>
 
    <script>
       function inIframe() {
