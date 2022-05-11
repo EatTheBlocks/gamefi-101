@@ -49,7 +49,7 @@ async function addTicketBalance(address, amount, transaction_id) {
     let dao = new FloopyDAO(dbfilepath);
     return await dao.AddPlayerBalance(address, amount, transaction_id);
   } catch (error) {
-    console.log(error);
+    console.log(`add ticket balance: `+error);
     return null;
   }
 }

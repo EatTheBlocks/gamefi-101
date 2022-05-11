@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Web3 = require('web3');
 const vaultabi = require('../contracts/vault.json');
 const flapabi=require('../contracts/vault.json');
@@ -5,10 +6,10 @@ const flapabi=require('../contracts/vault.json');
 class SmartContractDAO{
     constructor(){
         this.web3 = new Web3('https://data-seed-prebsc-1-s1.binance.org:8545/');
-        this.token_address ="";
-        this.vault_address ="0x140A13fe4da9e9F6dc5B712bf10F5F9fE91fd430";
-        this.withdrawer_private_key="";
-        this.withdrawer_address="";
+        this.token_address =process.env.TOKEN_ADDRESS;
+        this.vault_address =process.env.VAULT_ADDRESS;
+        this.withdrawer_private_key=process.env.WITHDRAWER_PRIVATE_KEY;
+        this.withdrawer_address=process.env.WITHDRAWER_ADDRESS;
     }
     async getBalance(address) {
         try {

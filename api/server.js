@@ -1,18 +1,18 @@
 require('dotenv').config();
 global.helper = require('./controllers/helper');
-
+var cors = require('cors');
 var express = require('express'),
   app = express(),
   port = process.env.PORT || 3000,
   bodyParser = require('body-parser');
-// app.use(
-//   cors({
-//     origin:['http://localhost:3000'],
-//     methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
-//     optionsSuccessStatus:204,
-//     preflightContinue:false
-//   })
-// )
+app.use(
+  cors({
+    origin:'*',
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+    optionsSuccessStatus:204,
+    preflightContinue:false
+  })
+)
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
