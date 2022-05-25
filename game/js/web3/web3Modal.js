@@ -10,6 +10,7 @@ const VAL_ABI = [{ "inputs": [], "stateMutability": "nonpayable", "type": "const
 const GAS_FEE = 500000;
 const GAS_FEE_APPROVAL = 60000;
 
+const TESTNET_BSCSCAN = "https://testnet.bscscan.com/tx/"
 
 let web3Modal
 let provider;
@@ -63,6 +64,9 @@ async function fetchAccountData() {
   const ticket = await getBalanceOf(accInfo.walletAddress);
   accInfo.ticket = ticket.balances;
 
+  const flpBalance = await getFLPBalance(accInfo.walletAddress);
+  accInfo.flpBalance = flpBalance;
+
   accountInfo = accInfo;
 
   const accountContainer = document.querySelector("#wallet-info");
@@ -73,7 +77,11 @@ async function fetchAccountData() {
     </div>   
     <div class='line'>
       <span>Bsc: </span>
-      <span>${accInfo.balance}</span>
+      <span>${parseFloat(accInfo.balance).toFixed(2)}</span>
+    </div>
+    <div class='line'>
+      <span>FLP: </span>
+      <span>${parseFloat(accInfo.flpBalance).toFixed(2)}</span>
     </div>
     <div class='line'>
       <span>Ticket: </span>
@@ -101,15 +109,19 @@ async function deposit(address, amount) {
 
   const response = await depositApi(address, amount, rs.transactionHash);
   console.log({ response })
+  return rs.transactionHash;
 }
 
 
-async function withdraw() {
-
+async function getFLPBalance(address) {
+  const flappyContract = new web3.eth.Contract(FLOPPY_ABI, FLOPPY_ADDRESS);
+  const balance = await flappyContract.methods.balanceOf(address).call();
+  return  web3.utils.fromWei(balance);
 }
 
 
 async function onConnect() {
+  
   try {
     provider = await web3Modal.connect();
   } catch (e) {
@@ -161,18 +173,28 @@ async function onConvertTicket() {
   const from =  $("#from-ticket");
   const to = $("#to-ticket");
   const fromVal = parseInt(from.val());  
+  let tranHash = '';
   if (lblFrom.text() === 'Ticket') {
-    await withdrawApi(accountInfo.walletAddress, fromVal);
+    const dataResponse = await withdrawApi(accountInfo.walletAddress, fromVal);
+    tranHash = dataResponse.txHash;
   } else {
-    await deposit(accountInfo.walletAddress, fromVal);
+    tranHash = await deposit(accountInfo.walletAddress, fromVal);
   }
   from.val(0);
   to.val(0);
 
   await fetchAccountData();
-  alert('Your transaction has been successful.')
+  const aTransaction = $("#a-transactionHash");
+  let url = `${TESTNET_BSCSCAN}${tranHash}`
+
+  aTransaction.attr('href', url);
+  aTransaction.text(shortAddress(tranHash));
+  
   process.hide();
   $(this).attr("disabled", false);
+  $("#deposit-withdraw").fadeToggle();
+
+  $("#dialog").dialog(); 
 }
 
 

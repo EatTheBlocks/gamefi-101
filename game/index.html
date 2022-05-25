@@ -20,6 +20,7 @@
    <meta property="og:site_name" content="Floppy Bird" />
 
    <!-- Style sheets -->
+   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/jquery-ui.js">
    <link href="css/reset.css" rel="stylesheet">
    <link href="css/main.css" rel="stylesheet">
 </head>
@@ -86,6 +87,15 @@
             <button id="btn-convert">Convert</button>
          </div>
       </div>
+
+      <div id="dialog">
+         <p>
+              Your transaction has been successfully! 
+         </p>
+         <a href="#" target="_blank" id="a-transactionHash">
+            ******
+        </a>
+       </div>
    </div>
    <div id="footer">
       <a href="https://www.dotgears.com/">original game/concept/art by dong nguyen</a>
@@ -95,8 +105,10 @@
    <div class="boundingbox" id="playerbox"></div>
    <div class="boundingbox" id="pipebox"></div>
 
+   
    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
    <script src="js/jquery.min.js"></script>
+   <script src="js/jquery-ui.min.js"></script>
    <script src="js/jquery.transit.min.js"></script>
    <script src="js/buzz.min.js"></script>
    <script type="text/javascript" src="js/web3/web3.min.js"></script>

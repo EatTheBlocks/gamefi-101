@@ -576,3 +576,32 @@ Screen - Game
       padding-top: 10px;
   }
  }
+.ui-widget-header {
+   align-items: flex-end;
+    display: flex;
+    justify-content: flex-end;
+}
+ #dialog {
+   background: white;
+   border-radius: 8px;
+   padding: 10px;
+   color: black;
+   box-shadow: 0px 1px 5px #999;
+   border: 1px solid #999;
+   align-items: center;
+   display: flex;
+   justify-content: center;
+   width: 100% !important;
+   flex-direction: column;
+ }
+
+ #a-transactionHash {
+   display: block;
+   background: #4ec0ca;
+   color: white;
+   padding: 10px 20px;
+   font-size: 14px;
+   border-radius: 5px;
+   margin-top: 10px;   
+   text-decoration: none;
+}
