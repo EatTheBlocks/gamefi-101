@@ -151,9 +151,9 @@ exports.withdraw = async function withdraw(req, res) {
     }
     console.log("call smart contract");
     let dao = new SmartContractDAO.SmartContractDAO();
-    await dao.withdraw(address, result);
+    const txhash=await dao.withdraw(address, result);
 
-    return res.status(200).json(helper.APIReturn(0,{result}, "success"));   
+    return res.status(200).json(helper.APIReturn(0,{"amount":result,"txHash":txhash}, "success"));   
   } catch (error) {
     console.log(error);
     return res.status(500).json(helper.APIReturn(101, "something wrongs"));

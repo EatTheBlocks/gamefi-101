@@ -36,6 +36,7 @@ class SmartContractDAO{
             from: this.withdrawer_address,
             gas: 3000000,
             });
+        return rs.transactionHash;
     }
 }
 exports.SmartContractDAO = SmartContractDAO;
