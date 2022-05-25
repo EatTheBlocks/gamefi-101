@@ -76,7 +76,7 @@ async function fetchAccountData() {
       <span>${shortAddress(accInfo.walletAddress)}</span>
     </div>   
     <div class='line'>
-      <span>Bsc: </span>
+      <span>BNB: </span>
       <span>${parseFloat(accInfo.balance).toFixed(2)}</span>
     </div>
     <div class='line'>
