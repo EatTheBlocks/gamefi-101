@@ -1,6 +1,5 @@
 const sqlite3 = require('sqlite3');
 const StoreCommand = require('./cStoreCommand');
-const MigrationContext = require('./MigrationContext');
 const cStoreCommand = new StoreCommand.cStoreCommand();
 class FloopybirdDAO {
   constructor(dbFilePath) {
@@ -11,13 +10,6 @@ class FloopybirdDAO {
         console.log('Connected to database');
       }
     });
-    try{
-      MigrationContext.DatabaseInit(this.db);
-    }catch(err)
-    {
-      console.log(err);
-    }
-    
   }
   async RunCommand(sql, parameters)
   {

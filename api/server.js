@@ -1,5 +1,4 @@
 require('dotenv').config();
-global.helper = require('./controllers/helper');
 var cors = require('cors');
 var express = require('express'),
   app = express(),

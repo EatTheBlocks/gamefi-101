@@ -1,5 +1,24 @@
 const sqlite3 = require('sqlite3').verbose();
-//const db = new sqlite3.Database(':memory:');
+
+
+/// Create new Raw Database
+function CreateRawDB(){
+    let newDB = new sqlite3.Database('../floppyBird.db', (err) => {
+        if (err) {
+          console.log('Could not connect to database', err)
+        } else {
+          console.log('Connected to database');
+        }
+      });
+      try{
+        DatabaseInit(newDB);
+      }catch(err)
+      {
+        console.log(err);
+      }
+}
+
+// Init Database tables in the database
 function DatabaseInit(db) {
     db.serialize(() => {
         let tbl_player_vault_ddl = 
@@ -38,18 +57,8 @@ function DatabaseInit(db) {
         db.run(tbl_vault_transaction);
     
         db.run(tbl_player_match);
-        /*
-        const stmt = db.prepare("INSERT INTO tbl_player_vault VALUES (?)");
-        for (let i = 0; i < 10; i++) {
-            stmt.run("Ipsum " + i);
-        }
-        stmt.finalize();
-        /*
-        db.each("SELECT rowid AS id, info FROM floopybird.tbl_player_vault", (err, row) => {
-            console.log(row.id + ": " + row.info);
-        });
-        */
     });
 }
+CreateRawDB();
 module.exports.DatabaseInit = DatabaseInit;
 
