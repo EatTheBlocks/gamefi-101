@@ -33,6 +33,10 @@ class cStoreCommand{
         this.AddPlayerBalanceTransactionCommand = 
         `INSERT INTO tbl_vault_transaction (wallet_id, transaction_type, amount, transaction_date,transaction_id)
         VALUES(lower($wallet_id), $transaction_type, $amount, $transaction_date,$transaction_id) returning id`;
+
+        this.UpdateTransactionCommand = 
+        `UPDATE tbl_vault_transaction SET transaction_id = $transid
+        WHERE id =$id returning id`;
     }
 }
 

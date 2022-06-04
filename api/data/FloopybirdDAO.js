@@ -92,15 +92,19 @@ class FloopybirdDAO {
     return result[0].balance;
   }
 
+  async UpdateTransaction(id, transid)
+  {
+    await this.RunCommand(cStoreCommand.UpdateTransactionCommand,{$id:id, $transid: transid});
+  }
+
   async WithdrawPlayerBalance(wallet_id, amount)
   {
     let date = parseInt(new Date().getTime()/1000);
     let result = await this.RunCommand(cStoreCommand.WithdrawPlayerBalanceCommand,{$wallet_id:wallet_id, $amount: amount});
     if(result == null || result.length == 0)
       return null;
-    await this.AddPlayerBalanceTransaction(wallet_id, 1, amount, date, null);
-
-    return amount;
+    let tx =  await this.AddPlayerBalanceTransaction(wallet_id, 2, amount, date, null);
+    return {amount:amount, transid:tx};
   }
 
   async StartPlayerMatch(wallet_id)
