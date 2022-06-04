@@ -26,5 +26,5 @@ var routes = require('./routes/APIRoutes'); //importing route
 routes(app); //register the route
 app.listen(port);
 
-console.log('Stickman api started on: ' + port);
+console.log('Floppy Bird api started on: ' + port);
 
