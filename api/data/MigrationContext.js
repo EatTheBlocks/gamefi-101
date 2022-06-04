@@ -18,7 +18,7 @@ function DatabaseInit(db) {
             transaction_type integer,
             amount REAL DEFAULT 0,
             transaction_date INTEGER,
-            status INTEGER,
+            status INTEGER DEFAULT 1,
             transaction_id TEXT
         );`
     

@@ -69,6 +69,21 @@ async function withdrawTicketBalance(address, amount) {
   return null;
 }
 
+async function updateTransaction(id, transid) {
+  try {
+    let dao = new FloopyDAO(dbfilepath);
+    //await dao.AddPlayerVault(address);
+    //await dao.AddPlayerBalance(address, amount*2);
+    let result =  await dao.UpdateTransaction(id, transid);
+
+    return result;
+
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+}
+
 async function startPlayerMatch(address) {
   try {
     let dao = new FloopyDAO(dbfilepath);
@@ -151,9 +166,10 @@ exports.withdraw = async function withdraw(req, res) {
     }
     console.log("call smart contract");
     let dao = new SmartContractDAO.SmartContractDAO();
-    const txhash=await dao.withdraw(address, result);
-
-    return res.status(200).json(helper.APIReturn(0,{"amount":result,"txHash":txhash}, "success"));   
+    let trans = await dao.withdraw(address, result.amount);
+    await updateTransaction(result.transid, trans);
+    return res.status(200).json(helper.APIReturn(0,{amount: result.amount, txHash: trans}, "success"));   
+    
   } catch (error) {
     console.log(error);
     return res.status(500).json(helper.APIReturn(101, "something wrongs"));
